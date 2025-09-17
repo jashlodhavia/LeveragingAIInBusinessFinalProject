@@ -20,11 +20,11 @@ EarningsCallAI is a web-based application that lets you upload earnings call aud
 ## 🖼️ Demo
 ### Landing Page
 Upload your earnings call audio:
-![Landing Page Screenshot](assets/landing_page.png)
+![Landing Page Screenshot](landing_page.png)
 
 ### Results Page
 View sentiment counts, audio snippets, and text segments:
-![Results Page Screenshot](assets/results_page.png)
+![Results Page Screenshot](results_page.png)
 
 ---
 
