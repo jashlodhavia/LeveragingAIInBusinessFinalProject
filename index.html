@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings Sentiment Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: #3f3f3f;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-square {
+            width: 36px;
+            height: 36px;
+            background: #e53e3e;
+            border-radius: 6px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #e53e3e;
+            letter-spacing: 1px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #eaeaea;
+            font-weight: 500;
+            font-size: 1.25rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #e53e3e;
+        }
+
+        .main-content {
+            padding: 4rem 0;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        .upload-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-area {
+            border: 3px dashed #e1e5e9;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #e53e3e;
+            background: rgba(229, 62, 62, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #e53e3e;
+            background: rgba(229, 62, 62, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #2c2c2c, #e53e3e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(229, 62, 62, 0.3);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #2c2c2c, #e53e3e);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(229, 62, 62, 0.4);
+        }
+
+        .file-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(229, 62, 62, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #e53e3e;
+            display: none;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e1e5e9;
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #2c2c2c, #e53e3e);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .upload-card {
+                padding: 2rem;
+                margin: 0 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            .logo-square {
+                width: 28px;
+                height: 28px;
+                margin-right: 10px;
+            }
+            .logo-text {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo-area">
+                    <span class="logo-square"></span>
+                    <span class="logo-text">EarningsAI</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#upload">Upload New</a></li>
+                    <li><a href="#export">Export Results</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                    <li><a href="#help">Help</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="hero-section">
+                <h1 class="hero-title">Earnings Call Intelligence</h1>
+                <p class="hero-subtitle">Advanced Sentiment Analysis Tool</p>
+                <p class="hero-description">
+                    Transform your earnings call analysis with AI-powered sentiment detection. 
+                    Upload audio files and receive comprehensive insights into market sentiment, 
+                    executive confidence, and strategic messaging.
+                </p>
+                
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">🎧</div>
+                        <div class="upload-text">Drop your earnings call here</div>
+                        <div class="upload-subtext">or click to browse files (MP3, WAV, M4A up to 500MB)</div>
+                        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                            Select Audio File
+                        </button>
+                        <input type="file" id="fileInput" class="file-input" accept=".mp3,.wav,.m4a,.mp4" />
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo">
+                        <strong>File selected:</strong> <span id="fileName"></span><br>
+                        <strong>Size:</strong> <span id="fileSize"></span><br>
+                        <strong>Duration:</strong> <span id="fileDuration">Calculating...</span>
+                    </div>
+                    
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileDuration = document.getElementById('fileDuration');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m ${secs}s`;
+            } else {
+                return `${minutes}m ${secs}s`;
+            }
+        }
+
+        function handleFileSelect(file) {
+            if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|wav|m4a|mp4)$/i)) {
+                alert('Please select a valid audio file (MP3, WAV, M4A, or MP4)');
+                return;
+            }
+
+            if (file.size > 500 * 1024 * 1024) {
+                alert('File size must be less than 500MB');
+                return;
+            }
+
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.style.display = 'block';
+            
+            // Simulate getting audio duration => Change this to (end-start) actual DURATION
+            setTimeout(() => {
+                const duration = Math.floor(Math.random() * 3600) + 1800; // Random 30-90 min
+                fileDuration.textContent = formatDuration(duration);
+            }, 1000);
+
+            simulateUpload(file);
+        }
+
+        function simulateUpload(file) {
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            let progress = 0;
+
+            // Simulate progress while uploading
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 90) progress = 90; // Stop at 90% until upload finishes
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Change to your actual backend URL, or use ngrok for public!
+            const backendUrl = 'http://127.0.0.1:5000/process-audio';
+
+            fetch(backendUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(interval);
+                progressFill.style.width = '100%';
+                setTimeout(() => {
+                    if (data.saved_segments) {
+                        localStorage.setItem('sentiment_results', JSON.stringify(data));
+                        console.log('Upload complete! Redirecting to analysis dashboard...');
+                        console.log("Response is\n", data);
+                        window.location.href = 'Sentiment Final.html?id=' + data.prefix;
+                    } else {
+                        console.log('Error: ' + (data.error || 'Unknown error occurred'));
+                        progressBar.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }
+                }, 500);
+            })
+            .catch(err => {
+                clearInterval(interval);
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+                alert('Upload failed: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
