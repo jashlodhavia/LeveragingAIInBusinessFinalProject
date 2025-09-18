@@ -36,9 +36,7 @@ View sentiment counts, audio snippets, and text segments:
 - **Storage:**  
   - Supabase Storage (for saving audio + results)
 - **AI/ML:**  
-  - Speech-to-text (OpenAI Whisper / AssemblyAI / Google STT)  
-  - Sentiment classification (custom or HuggingFace transformer)
-
+  - Speech-to-text & Sentiment Analysis (AssemblyAI)
 ---
 
 ## 📂 Project Structure
